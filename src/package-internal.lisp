@@ -97,6 +97,20 @@
    #:make-dynamic-geometry
    #:update-dynamic-geometry)
 
+  ;; grid
+  (:export
+   #:quad-grid/4-way
+   #:quad-grid/8-way
+   #:grid-cell-p
+   #:grid-cell-distance
+   #:grid-cell-neighbor
+   #:grid-cell-neighbors
+   #:grid-cell-neighbors-p
+   #:grid-cell-to-point
+   #:grid-cell-from-point
+   #:grid-cell-select-line
+   #:grid-cell-select-range)
+
   ;; image
   (:export
    #:channels
