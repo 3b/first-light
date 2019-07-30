@@ -5,16 +5,22 @@
           :initarg :size)
    (%cell-size :reader cell-size
                :initarg :cell-size
-               :initform (v2:one))
+               :initform nil)
    (%cell-origin :reader cell-origin
                  :initarg :cell-origin
-                 :initform (v2:zero))
-   (%start-angle :reader start-angle
-                 :initarg :start-angle)
-   (%edge-directions :reader edge-directions
-                     :initarg :edge-directions)
-   (%corner-directions :reader corner-directions
-                       :initarg :corner-directions)))
+                 :initform nil)
+   (%edge-directions :reader edge-directions)
+   (%corner-directions :reader corner-directions)))
+
+(defmethod initialize-instance :after ((instance grid-spec) &key size)
+  (unless size
+    (error "Grid must have a size."))
+  (with-slots (%cell-size %cell-origin) instance
+    (setf %cell-size (or %cell-size (v2:one))
+          %cell-origin (or %cell-origin (v2:zero)))))
+
+(defun make-grid (type &rest args)
+  (apply #'make-instance type args))
 
 (defun ensure-grid-cell (grid cell)
   (unless (grid-cell-p grid cell)
@@ -47,30 +53,6 @@
 (defgeneric grid-cell-select-range (grid cell range)
   (:method :before (grid cell range)
     (ensure-grid-cell grid cell)))
-
-(defun grid-cell-directions (grid)
-  (flet ((get-offset (count direction)
-           (with-slots (%start-angle %cell-size) grid
-             (let* ((factor (/ (+ %start-angle direction) count))
-                    (angle (a:lerp factor 0 (* pi 2))))
-               (v2:* %cell-size
-                     (v2:round (v2:vec (cos angle) (sin angle))))))))
-    (loop :with count = (length (grid-cell-neighbor-directions grid))
-          :for direction :below count
-          :for offset = (get-offset count direction)
-          :collect (v2:normalize offset))))
-
-(defun grid-cell-edge-directions (grid)
-  (u:interleave
-   (edge-directions grid)
-   (loop :for (k v) :on (grid-cell-directions grid) :by #'cddr
-         :collect v)))
-
-(defun grid-cell-corner-directions (grid)
-  (u:interleave
-   (corner-directions grid)
-   (loop :for (k v) :on (grid-cell-directions grid) :by #'cddr
-         :collect k)))
 
 (defun grid-cell-nudge (cell)
   (v2:+ cell (v2:vec 1e-7 1e-7)))

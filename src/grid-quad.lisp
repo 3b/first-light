@@ -1,10 +1,11 @@
 (in-package #:%first-light)
 
-(defclass quad-grid (grid-spec) ()
-  (:default-initargs
-   :start-angle 0
-   :edge-directions '(:e :n :w :s)
-   :corner-directions '(:ne :nw :sw :se)))
+(defclass quad-grid (grid-spec) ())
+
+(defmethod initialize-instance :after ((instance quad-grid) &key)
+  (with-slots (%edge-directions %corner-directions) instance
+    (setf %edge-directions '(:e :n :w :s)
+          %corner-directions '(:ne :nw :sw :se))))
 
 (defmethod grid-cell-neighbor-by-index ((grid quad-grid) cell index)
   (v2:+ cell (aref (grid-cell-neighbor-offsets grid) index)))

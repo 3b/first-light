@@ -5,7 +5,8 @@
   (:local-nicknames (#:a #:alexandria)
                     (#:u #:golden-utils)
                     (#:v2 #:origin.vec2)
-                    (#:v3 #:origin.vec3))
+                    (#:v3 #:origin.vec3)
+                    (#:v4 #:origin.vec4))
   (:use #:cl)
   (:export
    #:*core-debug*
@@ -101,6 +102,9 @@
   (:export
    #:quad-grid/4-way
    #:quad-grid/8-way
+   #:hex-grid/rows
+   #:hex-grid/columns
+   #:make-grid
    #:grid-cell-p
    #:grid-cell-distance
    #:grid-cell-neighbor
