@@ -1,14 +1,13 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (define-graph :core (:category component-dependency)
   (subdag all-unknown-types ((unknown-types)))
-  (subdag actions (fl.comp:action -> fl.comp:action-list))
-  (subdag drawables (fl.comp:static-mesh -> fl.comp:sprite -> fl.comp:render))
+  (subdag actions (v/comp:action -> v/comp:action-list))
+  (subdag drawables (v/comp:static-mesh -> v/comp:sprite -> v/comp:render))
   (subdag core-types
-          (fl.comp:transform
+          (v/comp:transform
            -> (splice actions)
            -> (splice drawables))))
 
 (define-graph :core-component-order (:category component-package-order)
-  ;; TODO: if changed to nickname package fl.comp, breaks
-  (subdag core-packages (:first-light.components)))
+  (subdag core-packages (:v/comp)))

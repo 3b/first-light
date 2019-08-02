@@ -1,13 +1,13 @@
-(asdf:defsystem #:first-light
+(asdf:defsystem #:virality
   :description "An experimental game engine."
   :author ("Michael Fiano <mail@michaelfiano.com>"
            "Peter Keller <psilord@cs.wisc.edu>")
   :maintainer ("Michael Fiano <mail@michaelfiano.com>"
                "Peter Keller <psilord@cs.wisc.edu>")
   :license "MIT"
-  :homepage "https://github.com/hackertheory/first-light"
-  :bug-tracker "https://github.com/hackertheory/first-light/issues"
-  :source-control (:git "https://github.com/hackertheory/first-light.git")
+  :homepage "https://github.com/hackertheory/virality"
+  :bug-tracker "https://github.com/hackertheory/virality/issues"
+  :source-control (:git "https://github.com/hackertheory/virality.git")
   :encoding :utf-8
   :depends-on (#:alexandria
                #:babel
@@ -34,16 +34,16 @@
   :pathname "src"
   :serial t
   :components
-  ((:file "package-internal")
-   (:file "package-gpu")
+  ((:file "package-gpu")
    (:file "package-shader")
    (:file "package-materials")
-   (:file "package-textures")
+   (:file "package-api")
    (:file "package-annotations")
    (:file "package-components")
    (:file "package-actions")
+   (:file "package-textures")
    (:file "package-prefab")
-   (:file "package-api")
+   (:file "package-nicknames")
    (:file "common")
    (:file "interactive-development")
    (:file "metadata")
@@ -64,8 +64,10 @@
    (:file "shared-storage")
    (:file "attributes")
    (:file "actor")
-   (:file "component-mop")
+   (:file "mop-component")
    (:file "component")
+   (:file "component-protocol")
+   (:file "book-keeping")
    (:file "object-query")
    (:file "annotations")
    (:file "frame")

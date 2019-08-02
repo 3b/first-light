@@ -1,4 +1,4 @@
-(in-package #:first-light.shader.texture)
+(in-package #:virality.shader.texture)
 
 (define-struct texture-struct
   (sampler1 :sampler-2d :accessor sampler1)

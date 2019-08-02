@@ -1,4 +1,4 @@
-(in-package #:first-light.shader.hash)
+(in-package #:virality.shader.hash)
 
 ;;;; Hashing functions
 ;;;; FAST32_2

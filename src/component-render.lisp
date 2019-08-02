@@ -1,6 +1,6 @@
-(in-package #:first-light.components)
+(in-package #:virality.components)
 
-(define-component render ()
+(v:define-component render ()
   ((%mode :reader mode
           :initarg :mode
           :initform :static-mesh)
@@ -9,39 +9,39 @@
    (%transform :reader transform)
    (%material :accessor material
               :initarg :material
-              :annotation (fl.annotations:material))))
+              :annotation (virality.annotations:material))))
 
 (defun set-draw-method (render)
   (with-slots (%draw-method) render
-    (let ((actor (actor render))
-          (instances (instances (material render))))
+    (let ((actor (v:actor render))
+          (instances (v::instances (material render))))
       (setf %draw-method
             (ecase (mode render)
               (:static-mesh
                (lambda ()
-                 (%fl:draw-static-geometry
-                  (data (actor-component-by-type actor 'static-mesh))
+                 (v::draw-static-geometry
+                  (data (v:component-by-type actor 'static-mesh))
                   instances)))
               (:dynamic-mesh
                (lambda ()
-                 (%fl:draw-dynamic-geometry
-                  (geometry (actor-component-by-type actor 'dynamic-mesh))
+                 (v::draw-dynamic-geometry
+                  (geometry (v:component-by-type actor 'dynamic-mesh))
                   instances)))
               (:sprite
                (lambda ()
                  (draw-sprite
-                  (actor-component-by-type (actor render) 'sprite)
+                  (v:component-by-type actor 'sprite)
                   instances))))))))
 
-(defmethod on-component-initialize ((self render))
+(defmethod v:on-component-initialize ((self render))
   (with-slots (%transform) self
-    (setf %transform (actor-component-by-type (actor self) 'transform))
+    (setf %transform (v:component-by-type (v:actor self) 'transform))
     (set-draw-method self)))
 
-(defmethod on-component-render ((self render))
-  (a:when-let ((camera (active-camera (context self))))
-    (using-material (material self)
-        (:model (fl.comp:model (transform self))
-         :view (fl.comp:view camera)
-         :proj (fl.comp:projection camera))
-      (funcall (draw-method self)))))
+(defmethod v:on-component-render ((self render))
+  (a:when-let ((camera (v:active-camera (v:context self))))
+              (v:using-material (material self)
+                                (:model (model (transform self))
+                                 :view (view camera)
+                                 :proj (projection camera))
+                                (funcall (draw-method self)))))

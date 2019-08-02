@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 ;; TODO: This is a naive collider resolution system that doesn't even take into
 ;; consideration or provide the feature of a sleeping collider. Also the main
@@ -65,7 +65,7 @@
   (let* ((cs (collider-system (core context)))
          (registering-colliders (registering-colliders cs)))
     ;; Insert the request for processing.
-    (setf (u:href registering-colliders (fl.comp:on-layer collider) collider)
+    (setf (u:href registering-colliders (v/comp:on-layer collider) collider)
           collider)))
 
 (defun deregister-collider (context collider)
@@ -73,7 +73,7 @@
   (let* ((cs (collider-system (core context)))
          (deregistering-colliders (deregistering-colliders cs)))
     ;; Insert the request for processing.
-    (setf (u:href deregistering-colliders (fl.comp:on-layer collider) collider)
+    (setf (u:href deregistering-colliders (v/comp:on-layer collider) collider)
           collider)))
 
 ;;; Contacts are symmetric in the internal data structures.
@@ -151,15 +151,15 @@ had--and update all other faces too."
         ;; removing hash tables we don't need anymore.
         (dolist (face-collider face-colliders)
           (when (contact-p collider-system fist-collider face-collider)
-            (v:trace :fl.core.collider
-                     "remove-all-contacts: attempting to remove ~A from contacting ~A."
-                     fist-collider face-collider)
+            (log:trace :virality
+                       "remove-all-contacts: attempting to remove ~A from contacting ~A."
+                       fist-collider face-collider)
             (exit-contact collider-system fist-collider face-collider)))))))
 
 (defun compute-contact-state (collider-system fist-collider face-collider)
   ;; 1. Compute if a collision happend.
   ;; 2. look into the contacts table and see what to do.
-  (let ((collided-p (fl.comp:collide-p fist-collider face-collider))
+  (let ((collided-p (v/comp:collide-p fist-collider face-collider))
         (contact-p (contact-p collider-system fist-collider face-collider)))
     ;; split up into clauses this way for easier understanding. The clauses
     ;; happen in order of what I speculate will be the most common to least
@@ -287,25 +287,25 @@ had--and update all other faces too."
               ;; The FIST is good to go! collide it and stabilize it!
               (let ((face-layers
                       (u:href (collision-plan collider-system) fist-layer)))
-                (v:trace :fl.core.collider
-                         "Checking registering fist: ~S, [~S: ~S]"
-                         (fl:display-id fist) (fl.comp:on-layer fist)
-                         face-layers)
+                (log:trace :virality
+                           "Checking registering fist: ~S, [~S: ~S]"
+                           (display-id fist) (v/comp:on-layer fist)
+                           face-layers)
                 (cond
                   ((null face-layers)
                    ;; If no face layers to collide against AT ALL,
                    ;; automatically stabilize the fist and we're done with it.
-                   (v:trace :fl.core.collider
-                            " Stabilizing[0]: ~S" (fl:display-id fist))
+                   (log:trace :virality
+                              " Stabilizing[0]: ~S" (display-id fist))
                    (setf (u:href stable-colliders fist-layer fist)
                          fist))
                   (t
                    ;; Else, we collide the fist against each face in each
                    ;; layer.
                    (dolist (face-layer face-layers)
-                     (v:trace :fl.core.collider
-                              " Checking contacts between layers: ~S <=> ~S"
-                              fist-layer face-layer)
+                     (log:trace :virality
+                                " Checking contacts between layers: ~S <=> ~S"
+                                fist-layer face-layer)
                      ;; Find all the face-layer colliders to which we need to
                      ;; collide.
                      (let ((face-layer-stable-colliders
@@ -315,9 +315,9 @@ had--and update all other faces too."
                        (unless (zerop (hash-table-count
                                        face-layer-stable-colliders))
                          (u:do-hash-keys (face face-layer-stable-colliders)
-                           (v:trace :fl.core.collider
-                                    "  compute-contact-state: [reg: ~S <-> stable: ~S]"
-                                    (fl:display-id fist) (fl:display-id face))
+                           (log:trace :virality
+                                      "  compute-contact-state: [reg: ~S <-> stable: ~S]"
+                                      (display-id fist) (display-id face))
                            (compute-contact-state collider-system fist
                                                   face)))))
                    ;; And when we *FINISH* colliding the specific registering
@@ -327,8 +327,8 @@ had--and update all other faces too."
                    ;; need be.
                    ;; NOTE: We CANNOT stabilize until AFTER the registering fist
                    ;; has been collided with all stable faces.
-                   (v:trace :fl.core.collider
-                            " Stabilizing[1]: ~S" (fl:display-id fist))
+                   (log:trace :virality
+                              " Stabilizing[1]: ~S" (display-id fist))
                    (setf (u:href stable-colliders fist-layer fist)
                          fist)))))))))))
 
@@ -420,6 +420,15 @@ had--and update all other faces too."
     (u:do-hash-keys (b ht1)
       (funcall func a b))))
 
+(defgeneric on-collision-enter (component other-collider)
+  (:method ((self component) other-collider)))
+
+(defgeneric on-collision-continue (component other-collider)
+  (:method ((self component) other-collider)))
+
+(defgeneric on-collision-exit (component other-collider)
+  (:method ((self component) other-collider)))
+
 (defun test-collider-system ()
   "Manually test the basic functionality of the collider system. To be run at
 the repl when the game is NOT running."
@@ -427,44 +436,44 @@ the repl when the game is NOT running."
          (context (make-instance 'context :core core)))
     (with-slots (%context) core
       (setf %context context))
-    (let* ((c0 (make-component (context core) 'fl.comp:collider/sphere
+    (let* ((c0 (make-component (context core) 'v/comp:collider/sphere
                                :display-id "Ground"
                                :on-layer :ground
                                :center (v3:zero)
                                :radius 1))
-           (c1 (make-component (context core) 'fl.comp:collider/sphere
+           (c1 (make-component (context core) 'v/comp:collider/sphere
                                :display-id "Player"
                                :on-layer :player
                                :center (v3:vec -20 5 0)
                                :radius 1))
-           (c2 (make-component (context core) 'fl.comp:collider/sphere
+           (c2 (make-component (context core) 'v/comp:collider/sphere
                                :display-id "Player-Bullet"
                                :on-layer :player-bullet
                                :center (v3:vec -10 5 0)
                                :radius 1))
-           (c3 (make-component (context core) 'fl.comp:collider/sphere
+           (c3 (make-component (context core) 'v/comp:collider/sphere
                                :display-id "Enemy"
                                :on-layer :enemy
                                :center (v3:vec 20 5 0)
                                :radius 1))
-           (c4 (make-component (context core) 'fl.comp:collider/sphere
+           (c4 (make-component (context core) 'v/comp:collider/sphere
                                :display-id "Enemy-Bullet"
                                :on-layer :enemy-bullet
                                :center (v3:vec 10 5 0)
                                :radius 1))
-           (c5 (make-component (context core) 'fl.comp:collider/sphere
+           (c5 (make-component (context core) 'v/comp:collider/sphere
                                :display-id "Scenery 1"
                                :on-layer :scenery
                                :center (v3:vec 0 5 0)
                                :radius 1))
-           (c6 (make-component (context core) 'fl.comp:collider/sphere
+           (c6 (make-component (context core) 'v/comp:collider/sphere
                                :display-id "Scenery 2"
                                :on-layer :scenery
                                :center (v3:vec 1 5 0)
                                :radius 1)))
       ;; Set referent to the same component for
       (loop :for c :in (list c0 c1 c2 c3 c4 c5 c6)
-            :do (setf (fl.comp:referent c) c))
+            :do (setf (v/comp:referent c) c))
       (initialize-collider-system core)
       (register-collider context c0)
       (register-collider context c1)
@@ -477,22 +486,22 @@ the repl when the game is NOT running."
       (compute-all-collisions (collider-system core))
       (format t "Collider Pass 1: enter~%")
       (format t "Moving enemy-bullet.~%")
-      (setf (fl.comp:center c4) (v3:vec -9 5 0))
+      (setf (v/comp:center c4) (v3:vec -9 5 0))
       (compute-all-collisions (collider-system core))
       (format t "Collider Pass 2: continue~%")
       (format t "Moving enemy-bullet.~%")
-      (setf (fl.comp:center c4) (v3:vec -10 5 0))
+      (setf (v/comp:center c4) (v3:vec -10 5 0))
       (compute-all-collisions (collider-system core))
       (format t "Collider Pass 2a: continue~%")
       (format t "Moving enemy-bullet.~%")
-      (setf (fl.comp:center c4) (v3:vec -11 5 0))
+      (setf (v/comp:center c4) (v3:vec -11 5 0))
       (compute-all-collisions (collider-system core))
       (format t "Collider Pass 2b: continue~%")
       (format t "Moving enemy-bullet.~%")
-      (setf (fl.comp:center c4) (v3:vec -12 5 0))
+      (setf (v/comp:center c4) (v3:vec -12 5 0))
       (compute-all-collisions (collider-system core))
       (format t "Moving enemy-bullet.~%")
-      (setf (fl.comp:center c4) (v3:vec -13 5 0))
+      (setf (v/comp:center c4) (v3:vec -13 5 0))
       (format t "Collider Pass 3: exit~%")
       (compute-all-collisions (collider-system core))
       (format t "Collider Pass 4: no colliding~%")

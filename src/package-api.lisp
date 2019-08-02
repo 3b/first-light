@@ -1,20 +1,11 @@
-(in-package #:defpackage+-user-1)
+(in-package #:cl-user)
 
-(defpackage+ #:first-light
-  (:nicknames #:fl)
+(defpackage #:virality.engine
   (:use #:cl)
-  (:inherit-from
-   #:%first-light
-   #:active-camera
-   #:actor
-   #:actor-component-by-type
-   #:actor-components-by-type
-   #:attach-component
-   #:attach-multiple-components
-   #:context
-   #:copy-material
-   #:delta
-   #:deploy-binary
+  ;; definitions
+  (:export
+   #:define-annotation
+   #:define-call-flow
    #:define-component
    #:define-geometry
    #:define-geometry-layout
@@ -22,69 +13,60 @@
    #:define-material
    #:define-material-profile
    #:define-options
+   #:define-prefab
    #:define-resources
    #:define-texture
-   #:define-texture-profile
-   #:deregister-collider
-   #:destroy
-   #:destroy-after-time
-   #:detach-component
-   #:display-id
-   #:find-actors-by-id
-   #:find-by-uuid
-   #:find-components-by-id
-   #:find-resource
+   #:define-texture-profile)
+  ;;
+  (:export
+   #:attrs
+   #:replace-action
+   #:repeat-p
+   #:action-step
+   #:manager
+   #:renderer
+   #:on-action-insert
+   #:on-action-finish
+   #:on-action-update
+   #:spawn-actor
+   #:make-actor
+   #:attach-component
+   #:active-camera
+   #:scene-tree
+   #:frame-manager
+   #:alpha
+   #:using-material
    #:frame-count
    #:frame-time
-   #:general-data-format-descriptor
-   #:id
-   #:input-data
-   #:instances
+   #:get-mouse-position
+   #:destroy-after-time
+   #:spawn-actor
+   #:attach-components
    #:make-actor
    #:make-component
-   #:make-dynamic-geometry
-   #:mat-uniform-ref
-   #:on-component-attach
-   #:on-component-destroy
-   #:on-component-detach
-   #:on-component-initialize
-   #:on-component-physics-update
-   #:on-component-render
-   #:on-component-update
-   #:on-collision-enter
-   #:on-collision-continue
-   #:on-collision-exit
-   #:option
-   #:print-all-resources
-   #:project-data
-   #:register-collider
-   #:shared-storage
-   #:spawn-actor
-   #:ss-href
-   #:start-engine
-   #:stop-engine
-   #:total-time
-   #:ttl
-   #:update-dynamic-geometry
-   #:using-material
-   #:with-shared-storage
-
-   ;; input
-   #:get-gamepad-analog
-   #:get-gamepad-name
-   #:get-mouse-position
-   #:get-mouse-scroll
-   #:handle-events
-   #:input-enabled-p
    #:input-enter-p
-   #:input-exit-p
-   #:make-input-data
-   #:prepare-gamepads
-   #:shutdown-gamepads)
-  (:inherit-from
-   #:fl.prefab
-   #:define-prefab
-   #:define-prefab-descriptor
-   #:find-prefab-descriptor
-   #:make-prefab-instance
-   #:ref))
+   #:frame-count
+   #:input-data
+   #:get-gamepad-analog
+   #:option
+   #:on-component-render
+   #:on-component-attach
+   #:on-component-detach
+   #:on-component-destroy
+   #:on-component-initialize
+   #:on-component-update
+   #:on-component-physics-update
+   #:destroy
+   #:display-id
+   #:on-collision-enter
+   #:on-collision-exit
+   #:on-collision-continue
+   #:meta
+   #:total-time
+   #:component-by-type
+   #:mat-uniform-ref
+   #:frame-time
+   #:context
+   #:id
+   #:actor
+   #:with-shared-storage))

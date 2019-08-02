@@ -1,4 +1,4 @@
-(in-package #:first-light.shader.visualization)
+(in-package #:virality.shader.visualization)
 
 (define-function collider/sphere/vert ()
   (values))

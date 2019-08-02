@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (defgeneric destroy-after-time (thing &key ttl)
   (:documentation "Takes either an ACTOR or a COMPONENT. The keyword argument
@@ -72,7 +72,7 @@ the test function for `HT` itself."
               ;; NOTE: Look at function GENERATE-SHADER-MODIFY-HOOK for how we
               ;; put data into the recompilation queue that this case in the
               ;; ecase handles.
-              (:shader-recompilation (fl.gpu:recompile-shaders data))
+              (:shader-recompilation (virality.gpu:recompile-shaders data))
               ;; NOTE: You will need a similar one for putting prefab
               ;; recompilation tasks into the recompilation queue too.
               (:prefab-recompilation 'put-your-function-here))))

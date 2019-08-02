@@ -1,6 +1,6 @@
-(in-package #:first-light.components)
+(in-package #:virality.components)
 
-(define-component sprite ()
+(v:define-component sprite ()
   ((%name :accessor name
           :initarg :name
           :initform nil)
@@ -26,7 +26,7 @@
 
 (defun make-spritesheet (context sprite)
   (with-slots (%name %spec) sprite
-    (let* ((spec (find-resource context %spec))
+    (let* ((spec (v::find-resource context %spec))
            (spritesheet (make-instance 'spritesheet
                                        :spec (u:safe-read-file-form spec)
                                        :geometry (gl:gen-vertex-array))))
@@ -35,7 +35,7 @@
 
 (defun write-spritesheet-buffer (spritesheet)
   (with-slots (%spec %buffer %sprites) spritesheet
-    (loop :with buffer-name = (fl.gpu:buffer-name %buffer)
+    (loop :with buffer-name = (virality.gpu:buffer-name %buffer)
           :with count = (length %spec)
           :with pos = (make-array count)
           :with size = (make-array count)
@@ -46,15 +46,15 @@
                   (setf (aref pos i) (v2:vec x y)
                         (aref size i) (v2:vec w h)
                         (u:href %sprites id) i)))
-          :finally (fl.gpu:write-buffer-path buffer-name :pos pos)
-                   (fl.gpu:write-buffer-path buffer-name :size size))))
+          :finally (virality.gpu:write-buffer-path buffer-name :pos pos)
+                   (virality.gpu:write-buffer-path buffer-name :size size))))
 
 (defun make-spritesheet-buffer (spritesheet)
   (with-slots (%spec %buffer) spritesheet
-    (fl.gpu:bind-block :spritesheet 1)
-    (setf %buffer (fl.gpu:create-buffer (a:make-gensym :spritesheet)
-                                        :spritesheet))
-    (fl.gpu:bind-buffer (fl.gpu:buffer-name %buffer) 1)
+    (virality.gpu:bind-block :spritesheet 1)
+    (setf %buffer (virality.gpu:create-buffer (a:make-gensym :spritesheet)
+                                              :spritesheet))
+    (virality.gpu:bind-buffer (virality.gpu:buffer-name %buffer) 1)
     (write-spritesheet-buffer spritesheet)))
 
 (defun update-sprite-index (sprite step)
@@ -65,25 +65,25 @@
 (defun draw-sprite (sprite &optional count)
   (with-slots (%index %spritesheet) sprite
     (with-slots (%geometry) %spritesheet
-      (fl.gpu:uniform-int 'fl.shader.sprite:sprite :sprite.index %index)
+      (virality.gpu:uniform-int 'virality.shader.sprite:sprite :sprite.index %index)
       (gl:bind-vertex-array %geometry)
       (gl:draw-arrays-instanced :points 0 1 count)
       (gl:bind-vertex-array 0))))
 
-(defmethod on-component-initialize ((self sprite))
+(defmethod v:on-component-initialize ((self sprite))
   (with-slots (%spritesheet %index %initial-index) self
-    (let ((context (context self))
+    (let ((context (v:context self))
           (name (name self))
           (spec (a:ensure-list (spec self))))
       (unless name
         (error "A sprite component must have a name."))
       (unless spec
         (error "A sprite component must have a spritesheet spec specified."))
-      (with-shared-storage
+      (v:with-shared-storage
           (context context)
-          ((cached-spritesheet spritesheet-present-p
-                               ('sprite :cached-spritesheet-data spec)
-                               (make-spritesheet context self)))
+        ((cached-spritesheet spritesheet-present-p
+                             ('sprite :cached-spritesheet-data spec)
+                             (make-spritesheet context self)))
         (setf %spritesheet cached-spritesheet
               %index (u:href (sprites %spritesheet) name)
               %initial-index %index)))))

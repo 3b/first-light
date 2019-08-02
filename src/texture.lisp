@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (defclass textures-table ()
   ((%profiles :reader profiles
@@ -444,16 +444,16 @@ assign it to the computed texture descriptor slot in TEXTURE."
   "Define a set of attribute defaults that can be applied while defining a
 texture."
   (a:with-gensyms (profile)
-    (let ((definition '(%fl:meta 'texture-profiles)))
+    (let ((definition '(meta 'texture-profiles)))
       `(let ((,profile ,(parse-texture-profile name body)))
          (unless ,definition
-           (setf (%fl:meta 'texture-profiles) (u:dict)))
+           (setf ,definition (u:dict)))
          (setf (u:href ,definition (name ,profile)) ,profile)))))
 
 (defmacro define-texture (name (textype &rest profile-overlay-names) &body body)
   "Construct a semantic TEXTURE-DESCRIPTOR. "
   (a:with-gensyms (desc)
-    (let ((definition '(%fl:meta 'textures)))
+    (let ((definition '(meta 'textures)))
       `(let ((,desc (make-texture-descriptor
                      :name ',name
                      :texture-type ',textype
@@ -462,21 +462,21 @@ texture."
          (setf ,@(loop :for (key value) :in body
                        :append `((u:href (attributes ,desc) ,key) ,value)))
          (unless ,definition
-           (setf (%fl:meta 'textures) (u:dict)))
+           (setf ,definition (u:dict)))
          (setf (u:href ,definition ',name) ,desc)
          (export ',name)))))
 
 (defun resolve-all-semantic-texture-descriptors (core)
   " Ensure that these aspects of texture profiles and desdcriptors are ok:
-1. The FL.TEXTURES:DEFAULT-PROFILE exists.
+1. The VIRALITY.TEXTURES:DEFAULT-PROFILE exists.
 2. Each texture-descriptor has an updated applied-profile set of attributes.
 3. All currently known about texture descriptors have valid profile references.
 4. All images specified by paths actually exist at that path.
 5. The texture type is valid."
   (symbol-macrolet ((profiles (profiles (textures core)))
                     (default-profile-name (a:ensure-symbol
-                                           'default-profile 'fl.textures)))
-    ;; 1. Check for fl.textures:default-profile
+                                           'default-profile 'virality.textures)))
+    ;; 1. Check for virality.textures:default-profile
     (unless (u:href profiles default-profile-name)
       (error "Default-profile for texture descriptors is not defined."))
     ;; 2. For each texture-descriptor, apply all the profiles in order.
@@ -562,8 +562,8 @@ semantic name of it which was specified with a DEFINE-TEXTURE."
       texture-name))
 
 (defun load-texture-descriptors (core)
-  (u:do-hash-values (profile (%fl:meta 'texture-profiles))
+  (u:do-hash-values (profile (meta 'texture-profiles))
     (add-texture-profile profile core))
-  (u:do-hash-values (desc (%fl:meta 'textures))
+  (u:do-hash-values (desc (meta 'textures))
     (add-semantic-texture-descriptor desc core))
   (resolve-all-semantic-texture-descriptors core))

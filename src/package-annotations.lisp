@@ -1,6 +1,5 @@
 (in-package #:cl-user)
 
-(defpackage #:first-light.annotations
-  (:nicknames #:fl.annotations)
-  (:use #:cl #:%first-light)
+(defpackage #:virality.annotations
+  (:use #:cl)
   (:export #:material))

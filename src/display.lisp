@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (defclass display ()
   ((%core :reader core
@@ -23,8 +23,8 @@
                  (sdl2::sdl-rc-error ()
                    (if (= current-value -1)
                        (try 1)
-                       (v:warn
-                        :fl.core.display "Ignoring vsync option due to driver ~
+                       (log:warn
+                        :virality "Ignoring vsync option due to driver ~
                                           limitation."))))))
       (try value))))
 

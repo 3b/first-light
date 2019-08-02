@@ -1,7 +1,7 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
-(setf (%fl:meta 'options/default)
-      (u:dict :title "First-Light Game Project"
+(setf (meta 'options/default)
+      (u:dict :title "Virality Engine Project"
               :window-width 800
               :window-height 450
               :delta 1/30
@@ -17,22 +17,22 @@
 
 (defun load-options (core)
   (let ((user-options-path (uiop:merge-pathnames*
-                            #p"first-light/first-light.conf"
+                            #p"virality/virality.conf"
                             (uiop:xdg-config-home))))
     (when (uiop:file-exists-p user-options-path)
-      (setf (%fl:meta 'options/user)
+      (setf (meta 'options/user)
             (apply #'u:dict
                    (u:safe-read-file-forms
                     user-options-path))))
     (setf (options core)
-          (u:hash-merge (%fl:meta 'options/default)
-                        (or (%fl:meta 'options/project)
+          (u:hash-merge (meta 'options/default)
+                        (or (meta 'options/project)
                             (u:dict))
-                        (or (%fl:meta 'options/user)
+                        (or (meta 'options/user)
                             (u:dict))))))
 
 (defun option (context option-name)
   (u:href (options context) option-name))
 
 (defmacro define-options (() &body body)
-  `(setf (%fl:meta 'options/project) (u:dict ,@body)))
+  `(setf (meta 'options/project) (u:dict ,@body)))

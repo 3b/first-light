@@ -1,9 +1,7 @@
 (in-package #:cl-user)
 
-(defpackage #:first-light.textures
-  (:nicknames #:fl.textures)
-  (:local-nicknames (#:v4 #:origin.vec4))
-  (:use #:cl #:%first-light)
+(defpackage #:virality.textures
+  (:use #:cl)
   ;; profiles
   (:export
    #:clamp-all-edges

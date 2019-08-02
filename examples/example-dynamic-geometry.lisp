@@ -1,14 +1,14 @@
-(in-package #:first-light.example)
+(in-package #:virality.examples)
 
 ;; Dynamic geometry
 
-(fl:define-geometry-layout tile
+(v:define-geometry-layout tile
   (:data (:format interleaved)
          (position :type float :count 3)
          (normal :type float :count 3)
          (uv :type float :count 3)))
 
-(fl:define-geometry tile
+(v:define-geometry tile
   :layout tile
   :primitive :triangle-strip
   :vertex-count 4
@@ -20,20 +20,20 @@
 
 ;;; Prefabs
 
-(fl:define-material dynamic-geometry
-  (:profiles (fl.materials:u-mvp)
-   :shader fl.shader.user:dynamic-geometry))
+(v:define-material dynamic-geometry
+  (:profiles (virality.materials:u-mvp)
+   :shader virality.shader.user:dynamic-geometry))
 
-(fl:define-prefab "dynamic-geometry" (:library examples)
+(virality.prefab:define-prefab "dynamic-geometry" (:library examples)
   (("camera" :copy "/cameras/perspective"))
   (("plane")
-   (fl.comp:transform :rotate/inc (q:orient :local :x pi)
-                      :scale (v3:vec 20 20 20))
-   (fl.comp:dynamic-mesh :geometry 'tile)
-   (fl.comp:render :material 'dynamic-geometry
-                   :mode :dynamic-mesh)))
+   (v/comp:transform :rotate/inc (q:orient :local :x pi)
+                     :scale (v3:vec 20 20 20))
+   (v/comp:dynamic-mesh :geometry 'tile)
+   (v/comp:render :material 'dynamic-geometry
+                  :mode :dynamic-mesh)))
 
 ;;; Prefab descriptors
 
-(fl:define-prefab-descriptor dynamic-geometry ()
-  ("dynamic-geometry" fl.example:examples))
+(virality.prefab:define-prefab-descriptor dynamic-geometry ()
+  ("dynamic-geometry" virality.examples:examples))

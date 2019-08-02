@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 ;; Held in core, the material database for all materials everywhere.
 (defclass materials-table ()
@@ -15,15 +15,15 @@
 
 (defun %lookup-material (material-name core)
   "Find a material by its ID in CORE and return a gethash-like values. If the
-material isn't there, return the 'fl.materials:missing-material. The return
-value is two values, the first is a material instance, and the second is T if
-the material being looked up was actually found, or NIL if it wasn't (and the
-missing material used)."
+material isn't there, return the 'virality.materials:missing-material. The
+return value is two values, the first is a material instance, and the second is
+T if the material being looked up was actually found, or NIL if it wasn't (and
+the missing material used)."
   (symbol-macrolet ((table (material-table (materials core))))
     (u:if-found (material (u:href table material-name))
                 material
                 (u:href table
-                        (a:ensure-symbol 'missing-material 'fl.materials)))))
+                        (a:ensure-symbol 'missing-material 'virality.materials)))))
 
 (defun %add-material (material core)
   "Add the MATERIAL by its id into CORE."
@@ -498,18 +498,18 @@ or if it a vector of the same. Return NIL otherwise."
              (gl:active-texture unit)
              (gl:bind-texture (sampler-type->texture-type glsl-type)
                               (texid texture))
-             (fl.gpu:uniform-int shader uniform-name unit)))
+             (virality.gpu:uniform-int shader uniform-name unit)))
          (ecase glsl-type
            (:bool (lambda (shader uniform value)
-                    (fl.gpu:uniform-int shader uniform (if value 1 0))))
-           (:int #'fl.gpu:uniform-int)
-           (:float #'fl.gpu:uniform-float)
-           (:vec2 #'fl.gpu:uniform-vec2)
-           (:vec3 #'fl.gpu:uniform-vec3)
-           (:vec4 #'fl.gpu:uniform-vec4)
-           (:mat2 #'fl.gpu:uniform-mat2)
-           (:mat3 #'fl.gpu:uniform-mat3)
-           (:mat4 #'fl.gpu:uniform-mat4))))
+                    (virality.gpu:uniform-int shader uniform (if value 1 0))))
+           (:int #'virality.gpu:uniform-int)
+           (:float #'virality.gpu:uniform-float)
+           (:vec2 #'virality.gpu:uniform-vec2)
+           (:vec3 #'virality.gpu:uniform-vec3)
+           (:vec4 #'virality.gpu:uniform-vec4)
+           (:mat2 #'virality.gpu:uniform-mat2)
+           (:mat3 #'virality.gpu:uniform-mat3)
+           (:mat4 #'virality.gpu:uniform-mat4))))
     (cons
      (if (sampler-p (car glsl-type))
          (let* ((units
@@ -525,17 +525,17 @@ or if it a vector of the same. Return NIL otherwise."
                        (gl:bind-texture
                         (sampler-type->texture-type (car glsl-type))
                         (texid texture)))
-             (fl.gpu:uniform-int-array shader uniform-name units)))
+             (virality.gpu:uniform-int-array shader uniform-name units)))
          (ecase (car glsl-type)
-           (:bool #'fl.gpu:uniform-int-array)
-           (:int #'fl.gpu:uniform-int-array)
-           (:float #'fl.gpu:uniform-float-array)
-           (:vec2 #'fl.gpu:uniform-vec2-array)
-           (:vec3 #'fl.gpu:uniform-vec3-array)
-           (:vec4 #'fl.gpu:uniform-vec4-array)
-           (:mat2 #'fl.gpu:uniform-mat2-array)
-           (:mat3 #'fl.gpu:uniform-mat3-array)
-           (:mat4 #'fl.gpu:uniform-mat4-array))))
+           (:bool #'virality.gpu:uniform-int-array)
+           (:int #'virality.gpu:uniform-int-array)
+           (:float #'virality.gpu:uniform-float-array)
+           (:vec2 #'virality.gpu:uniform-vec2-array)
+           (:vec3 #'virality.gpu:uniform-vec3-array)
+           (:vec4 #'virality.gpu:uniform-vec4-array)
+           (:mat2 #'virality.gpu:uniform-mat2-array)
+           (:mat3 #'virality.gpu:uniform-mat3-array)
+           (:mat4 #'virality.gpu:uniform-mat4-array))))
     (t
      (error "Cannot determine binder function for glsl-type: ~S~%"
             glsl-type))))
@@ -557,7 +557,7 @@ or if it a vector of the same. Return NIL otherwise."
 
 (defun annotate-material-uniform (uniform-name uniform-value material
                                   shader-program)
-  (u:if-found (type-info (u:href (fl.gpu:uniforms shader-program)
+  (u:if-found (type-info (u:href (virality.gpu:uniforms shader-program)
                                  uniform-name))
               (let ((uniform-type (u:href type-info :type)))
                 ;; 1. Find the uniform in the shader-program and get its
@@ -604,8 +604,8 @@ or if it a vector of the same. Return NIL otherwise."
   ;; 1. Validate that this material-block-value is present in the shaders in
   ;; core
   ;; TODO: 2. Create the block-name-alias, but only once.
-  (unless (fl.gpu:find-block alias-name)
-    (fl.gpu:create-block-alias (storage-type block-value)
+  (unless (virality.gpu:find-block alias-name)
+    (virality.gpu:create-block-alias (storage-type block-value)
                                (block-name block-value)
                                (shader material)
                                alias-name)))
@@ -656,24 +656,24 @@ be executed after all the shader programs have been compiled."
   "Define a set of uniform and block shader attribute defaults that can be
 applied in an overlay manner while defining a material."
   (a:with-gensyms (profile)
-    (let ((definition '(%fl:meta 'material-profiles)))
+    (let ((definition '(meta 'material-profiles)))
       (destructuring-bind (&key uniforms blocks) body
         `(let ((,profile ,(parse-material-profile name uniforms blocks)))
            (unless ,definition
-             (setf (%fl:meta 'material-profiles) (u:dict)))
+             (setf ,definition (u:dict)))
            (setf (u:href ,definition (name ,profile)) ,profile))))))
 
 (defmacro define-material (name &body (body))
   ;; TODO: better parsing and type checking of material forms...
   (a:with-gensyms (func)
-    (let ((definition '(%fl:meta 'materials)))
+    (let ((definition '(meta 'materials)))
       (destructuring-bind (&key shader profiles (instances 1) attributes
                              uniforms blocks)
           body
         `(let ((,func ,(parse-material name shader instances attributes profiles
                                        uniforms blocks)))
            (unless ,definition
-             (setf (%fl:meta 'materials) (u:dict)))
+             (setf ,definition (u:dict)))
            (setf (u:href ,definition ',name) ,func)
            (export ',name))))))
 
@@ -692,7 +692,7 @@ applied in an overlay manner while defining a material."
 (defmacro using-material (material (&rest bindings) &body body)
   (a:with-gensyms (material-ref)
     `(let ((,material-ref ,material))
-       (fl.gpu:with-shader (shader ,material-ref)
+       (virality.gpu:with-shader (shader ,material-ref)
          (setf ,@(loop :for (k v) :on bindings :by #'cddr
                        :collect `(mat-uniform-ref ,material-ref ,k)
                        :collect v))
@@ -701,16 +701,16 @@ applied in an overlay manner while defining a material."
            ,@body)))))
 
 (defun load-materials (core)
-  (u:do-hash-values (profile (%fl:meta 'material-profiles))
+  (u:do-hash-values (profile (meta 'material-profiles))
     (%add-material-profile profile core))
-  (u:do-hash-values (material-func (%fl:meta 'materials))
+  (u:do-hash-values (material-func (meta 'materials))
     (%add-material (funcall material-func core) core))
   (resolve-all-materials core))
 
 ;;; Helper functions
 
-(in-package #:fl.materials)
+(in-package #:virality.materials)
 
 (defun total-time (context material)
   (declare (ignore material))
-  (fl:total-time context))
+  (v:total-time context))

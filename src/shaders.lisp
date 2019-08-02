@@ -1,8 +1,8 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (defun initialize-shaders (core)
   (let ((modify-hook (generate-shader-modify-hook core)))
-    (setf (shaders core) (fl.gpu:load-shaders modify-hook))))
+    (setf (shaders core) (virality.gpu:load-shaders modify-hook))))
 
 (defun generate-shader-modify-hook (core)
   (lambda (programs)

@@ -1,4 +1,4 @@
-(in-package #:first-light.shader.color)
+(in-package #:virality.shader.color)
 
 ;;;; Color space conversion
 ;;;; Credits:

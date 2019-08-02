@@ -1,6 +1,6 @@
-(in-package #:first-light.components)
+(in-package #:virality.components)
 
-(define-component collider/sphere ()
+(v:define-component collider/sphere ()
   (;; The collider is only ever on a single layer.
    (%on-layer :accessor on-layer
               :initarg :on-layer)
@@ -21,8 +21,8 @@
    (%geometry :reader geometry
               :initform (gl:gen-vertex-array))
    (%material :reader material
-              :initform 'fl.materials::collider/sphere
-              :annotation (fl.annotations:material))
+              :initform 'virality.materials::collider/sphere
+              :annotation (virality.annotations:material))
    ;; TODO: We do not have a difference between triggers and collisions yet.
    ;; That will come when actual physics arrives.
    ;; on-collision-enter
@@ -36,36 +36,36 @@
               :initarg :referent
               :initform nil)))
 
-(defmethod on-component-initialize ((self collider/sphere))
+(defmethod v:on-component-initialize ((self collider/sphere))
   ;; TODO
   nil)
 
-(defmethod on-component-attach ((self collider/sphere) actor)
+(defmethod v:on-component-attach ((self collider/sphere) actor)
   (declare (ignore actor))
-  (let ((context (context self)))
-    (register-collider context self)))
+  (let ((context (v:context self)))
+    (v::register-collider context self)))
 
-(defmethod on-component-detach ((self collider/sphere) actor)
+(defmethod v:on-component-detach ((self collider/sphere) actor)
   (declare (ignore actor))
-  (let ((context (context self)))
-    (deregister-collider context self)))
+  (let ((context (v:context self)))
+    (v::deregister-collider context self)))
 
-(defmethod on-component-destroy ((self collider/sphere))
+(defmethod v:on-component-destroy ((self collider/sphere))
   (setf (referent self) nil))
 
 ;; TODO: When I implement the ability to not call protocol methods on types that
 ;; don't have them defined, ALSO create a feature that I can turn off calling
 ;; them for types that DO have them. Then I can leave this here and also not pay
 ;; the cost to render it.
-(defmethod on-component-render ((self collider/sphere))
+(defmethod v:on-component-render ((self collider/sphere))
   (unless (visualize self)
-    (return-from on-component-render))
-  (a:when-let ((camera (active-camera (context self))))
-    (let ((transform (actor-component-by-type (actor self) 'fl.comp:transform)))
-      (using-material (material self)
-          (:model (fl.comp:model transform)
-           :view (fl.comp:view camera)
-           :proj (fl.comp:projection camera)
+    (return-from v:on-component-render))
+  (a:when-let ((camera (v:active-camera (v:context self))))
+    (let ((transform (v:component-by-type (v:actor self) 'transform)))
+      (v:using-material (material self)
+          (:model (model transform)
+           :view (view camera)
+           :proj (projection camera)
            :collider-local-position (center self)
            :in-contact-p (> (num-contacts self) 0)
            ;; NOTE: The shader computes the radius appropriately for
@@ -110,17 +110,17 @@
   "Return T if the two collider/spheres actually collided."
   (cond
     ;; A test path when testing colliders outside of FL's prefabs.
-    ((not (and (actor fist) (actor face))) ;; a test case, no transform comp.
+    ((not (and (v:actor fist) (v:actor face))) ;; a test case, no transform comp.
      (let ((distance/2 (/ (v3:distance (center fist) (center face)) 2.0)))
-       (or (<= distance/2 (fl.comp:radius fist))
-           (<= distance/2 (fl.comp:radius face)))))
+       (or (<= distance/2 (radius fist))
+           (<= distance/2 (radius face)))))
     (t
      ;; The real path through this code, which transforms the collider into
      ;; world space appropriately.
      (let* ((fist-transform
-              (actor-component-by-type (actor fist) 'fl.comp:transform))
+              (v:component-by-type (v:actor fist) 'transform))
             (face-transform
-              (actor-component-by-type (actor face) 'fl.comp:transform))
+              (v:component-by-type (v:actor face) 'transform))
             ;; Figure out where the center for these colliders are in world
             ;; space.
             (fist-collider-world-center

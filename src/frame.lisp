@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (defclass frame-manager ()
   ((%start :reader start
@@ -57,8 +57,8 @@
            (fps (/ %debug-count %debug-interval)))
       (when (and (>= elapsed-seconds %debug-interval)
                  (plusp fps))
-        (v:debug :fl.core.engine "Frame rate: ~,2f fps (~,3f ms/f)"
-                 fps (/ 1000 fps))
+        (log:debug :virality "Frame rate: ~,2f fps (~,3f ms/f)"
+                   fps (/ 1000 fps))
         (setf %debug-count 0
               %debug-time now))
       (incf %debug-count))))
@@ -79,9 +79,9 @@
                     'protocol-physics-update
                     :come-from-state-name
                     :ef-physics-update)
-      (fl.comp:map-nodes
-       (lambda (x) (fl.comp:transform-node core x))
-       (actor-component-by-type (scene-tree core) 'fl.comp:transform))
+      (v/comp:map-nodes
+       (lambda (x) (v/comp:transform-node core x))
+       (component-by-type (scene-tree core) 'v/comp:transform))
       (execute-flow core
                     :default
                     'active-phase
@@ -97,8 +97,8 @@
       (when (and interval
                  (>= (- %now %period-elapsed) interval))
         (live-coding-update)
-        (v:trace :fl.core.engine "Periodic update performed (every ~d seconds)"
-                 interval)
+        (log:trace :virality "Periodic update performed (every ~d seconds)"
+                   interval)
         (setf %period-elapsed %now)))))
 
 (defun tick (core)

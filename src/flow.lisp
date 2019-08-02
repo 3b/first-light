@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (defclass flow-state ()
   ((%name :accessor name
@@ -135,8 +135,8 @@ COME-FROM-STATE-NAME is an arbitrary symbol that indicates the previous
 flow-state name. This is often a symbolic name so execute-flow can determine how
 the flow exited. Return two values The previous state name and the current state
 name which resulted in the exiting of the flow."
-  (v:trace :fl.core.flow "Entering flow: (~a ~a ~a)"
-           call-flow-name flow-name flow-state-name)
+  (log:trace :virality "Entering flow: (~a ~a ~a)"
+             call-flow-name flow-name flow-state-name)
   (loop :with call-flow = (get-call-flow call-flow-name core)
         :with flow = (get-flow flow-name call-flow)
         :with flow-state = (get-flow-state flow-state-name flow)
@@ -144,8 +144,8 @@ name which resulted in the exiting of the flow."
         :with last-state-name
         :with selections
         :with policy = :identity-policy
-        :do (v:trace :fl.core.flow "Processing flow-state: ~a, exiting: ~a"
-                     (name flow-state) (exitingp flow-state))
+        :do (log:trace :virality "Processing flow-state: ~a, exiting: ~a"
+                       (name flow-state) (exitingp flow-state))
             ;; Step 1: Record state transition and update to current.
             (setf last-state-name current-state-name
                   current-state-name (name flow-state))
@@ -213,8 +213,8 @@ name which resulted in the exiting of the flow."
                         (error "EXECUTE-FLOW :type-policy is broken."))))))))
             ;; Step 5: Exit if reached exiting state.
             (when (exitingp flow-state)
-              (v:trace :fl.core.flow "Exiting flow: (~a ~a ~a)"
-                       call-flow-name flow-name current-state-name)
+              (log:trace :virality "Exiting flow: (~a ~a ~a)"
+                         call-flow-name flow-name current-state-name)
               (return-from execute-flow (values last-state-name
                                                 current-state-name)))
             ;; Step 6: Run the transition function to determine the next
@@ -238,12 +238,12 @@ name which resulted in the exiting of the flow."
 
 (defmacro define-call-flow (name () &body body)
   (a:with-gensyms (call-flow)
-    (let ((definition '(%fl:meta 'call-flows)))
+    (let ((definition '(meta 'call-flows)))
       `(let ((,call-flow ,(parse-call-flows body)))
          (unless ,definition
-           (setf (%fl:meta 'call-flows) (u:dict)))
+           (setf (meta 'call-flows) (u:dict)))
          (setf (u:href ,definition ',name) ,call-flow)))))
 
 (defun load-call-flows (core)
-  (u:do-hash (k v (%fl:meta 'call-flows))
+  (u:do-hash (k v (meta 'call-flows))
     (setf (u:href (call-flows core) k) v)))

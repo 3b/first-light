@@ -4,10 +4,10 @@ The following are some important things a developer working on the codebase shou
 
 ** [[Project Maintenance]]
 Some general rules for working on the codebase, such as how to work on reported
-[Issues](https://github.com/HackerTheory/first-light/issues).
+[Issues](https://github.com/HackerTheory/virality/issues).
 
 ** [[Design Decisions]]
-Various constraints that a user of First Light must abide by.
+Various constraints that a user of Virality Engine must abide by.
 
 ** [[Style Conventions]]
 Some style conventions developers of the code-base must abide by.
@@ -21,4 +21,4 @@ How to use the built-in screen logging system.
 Information on the various types of extensions, and how they function.
 
 *** [[Actor Life Cycle]]
-Information about actors and how they are internally stored in First Light.
+Information about actors and how they are internally stored in Viratiy Engine.

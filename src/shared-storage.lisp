@@ -1,4 +1,4 @@
-(in-package #:%first-light)
+(in-package #:virality.engine)
 
 (defun ss-href (context component-name namespace &rest keys)
   (let* ((qualified-component-name (qualify-component (core context)
@@ -62,6 +62,10 @@ dense lexical scope."
                  (setf ,lexical-var ,cache-value-form
                        (ss-href ,context ,@lookup-args) ,lexical-var))
                ,(%generate-ss-get/set context (rest bindings) body)))))))
+
+(defgeneric shared-storage-metadata (component-name &optional namespace)
+  (:method ((component-name symbol) &optional namespace)
+    (declare (ignore namespace))))
 
 (defmacro with-shared-storage ((context-var context-form) cache-bindings
                                &body body)

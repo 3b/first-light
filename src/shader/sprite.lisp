@@ -1,4 +1,4 @@
-(in-package #:first-light.shader.sprite)
+(in-package #:virality.shader.sprite)
 
 (define-struct sprite-data
   (sampler :sampler-2d :accessor sampler)

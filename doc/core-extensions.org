@@ -1,9 +1,10 @@
 * Core Extensions
 
 ** Extension Types
-First Light has a variety of extensions, which are mini languages used to modify the behavior of
-different engine features. Below are the list of extension types First Light has. Click on any
-extension type name to go to a more in-depth explanation of that particular extension.
+Virality Engine has a variety of extensions, which are mini languages used to
+modify the behavior of different engine features. Below are the list of
+extension types Virality Engine has. Click on any extension type name to go to a
+more in-depth explanation of that particular extension.
 
 *** [[Settings Extension]]
 Provides a key/value store, used by the core engine, various components, and the user for keeping
@@ -21,12 +22,13 @@ at the top indicating what packages the stages and programs are in. Then, you mu
 package qualified shader name in the scene file to use it.
 
 *** [[Graphs]]
-Graphs are grouped into categories, and all graphs of a particular category are effectively unioned
-together. Graphs may be described as sets of named subgraphs that can be spliced together to form
-the larger graph. This makes it easy for a human to manage the graph structure. An important graph
-category is the =component-dependency= graph. This allows the user to specify component type names in
-a graph in order to indicate in what order (via topological sort) the types should be updated in the
-First Light component protocol.
+Graphs are grouped into categories, and all graphs of a particular category are
+effectively unioned together. Graphs may be described as sets of named subgraphs
+that can be spliced together to form the larger graph. This makes it easy for a
+human to manage the graph structure. An important graph category is the
+=component-dependency= graph. This allows the user to specify component type names
+in a graph in order to indicate in what order (via topological sort) the types
+should be updated in the Virality Engine component protocol.
 
 *** [[Call-Flow]]
 Describes a finite state machine. Each state has a selector, action, and transition function. The

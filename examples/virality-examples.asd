@@ -1,12 +1,12 @@
-(asdf:defsystem #:first-light.example
-  :description "Examples for first-light."
+(asdf:defsystem #:virality-examples
+  :description "Examples for Virality Engine."
   :author ("Michael Fiano <michael.fiano@gmail.com>"
            "Peter Keller <psilord@cs.wisc.edu>")
   :maintainer ("Michael Fiano <michael.fiano@gmail.com>"
                "Peter Keller <psilord@cs.wisc.edu>")
   :license "MIT"
   :version "0.1.0"
-  :depends-on (#:first-light)
+  :depends-on (#:virality)
   :serial t
   :components
   ((:file "package")
@@ -25,7 +25,7 @@
    (:file "example-noise")
    (:file "example-sprite")
    (:file "example-texture")
-   (:module "protect-the-planets"
-    :components
-    ((:file "common")
-     (:file "example-protect-the-planets")))))
+   #++(:module "protect-the-planets"
+       :components
+       ((:file "common")
+        (:file "example-protect-the-planets")))))
