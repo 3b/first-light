@@ -10,7 +10,11 @@
                #:golden-utils
                #:origin
                #:verbose
-               #:virality.engine)
+               #:virality.engine
+               #:3b-bmfont
+               #:3b-bmfont/xml
+               #:3b-bmfont/json
+               )
   :serial t
   :components
   ((:file "package")
@@ -20,6 +24,7 @@
    (:file "shaders/graph")
    (:file "shaders/noise")
    (:file "shaders/texture")
+   (:file "shaders/text")
    (:file "example-collision")
    (:file "example-damaged-helmet")
    (:file "example-dynamic-geometry")
@@ -29,6 +34,7 @@
    (:file "example-noise")
    (:file "example-sprite")
    (:file "example-texture")
+   (:file "example-text")
    (:module "protect-the-planets"
     :components
     ((:file "common")
