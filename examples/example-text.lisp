@@ -94,16 +94,16 @@
          :data d)))))
 
 ;;; Prefabs
-
+#++
 (v:define-texture noto-atlas (:texture-2d)
   (:data #(:noto-font)))
-
+#++
 (v:define-texture georgia-atlas (:texture-2d)
   (:data #(:georgia-font)))
 
 (v:define-texture dejavu-atlas (:texture-2d)
   (:data #(:deja-font)))
-
+#++
 (v:define-texture georgia-atlas (:texture-2d)
   (:data #(:georgia-font)))
 
@@ -116,6 +116,7 @@
 (v:define-texture yahei-atlas (:texture-2d)
   (:data #((:fonts "yahei.png"))))
 
+#++
 (v:define-material text-noto
   (:profiles (x/mat:u-mvp)
    :shader ex/shd:text
@@ -127,7 +128,7 @@
    :uniforms ((:font.sampler 'dejavu-atlas)
               (:font.pixel-range 4)
               (:font.mode 0))))
-
+#++
 (v:define-material text-georgia
   (:profiles (x/mat:u-mvp)
    :shader ex/shd:text
