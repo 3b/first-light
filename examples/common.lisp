@@ -21,7 +21,14 @@
   (:cubemaparray (:project :example-texture "cube-map-array"))
   (:spritesheet (:project :texture "example-sprite/sprites.tiff"))
   (:spritesheet-data (:project "sprites.sexp"))
-  (:damaged-helmet-textures (:project :texture "example-damaged-helmet")))
+  (:damaged-helmet-textures (:project :texture "example-damaged-helmet"))
+  (:fonts (:project "fonts"))
+  (:noto-font (:project :fonts "noto.png"))
+  (:noto-fontdata (:project :fonts "noto.sexp"))
+  (:georgia-font (:project :fonts "georgia.png"))
+  (:georgia-fontdata (:project :fonts "georgia.sexp"))
+  (:deja-font (:project :fonts "DejaVu-sdf.png"))
+  (:deja-fontdata (:project :fonts "DejaVu-sdf.fnt")))
 
 ;;; Prefabs
 
