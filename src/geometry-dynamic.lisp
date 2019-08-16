@@ -54,7 +54,9 @@
 
 (defun draw-dynamic-geometry (geometry instance-count)
   (with-slots (%primitive %vertex-count) geometry
-    (%gl:draw-arrays-instanced %primitive 0 %vertex-count instance-count)))
+    (gl:bind-vertex-array (id geometry))
+    (%gl:draw-arrays-instanced %primitive 0 %vertex-count instance-count)
+    (gl:bind-vertex-array 0)))
 
 (defmacro define-geometry-layout (name &body body)
   (a:with-gensyms (groups order)
