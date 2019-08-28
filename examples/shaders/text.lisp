@@ -30,9 +30,13 @@
 (define-function sample ((sampler :sampler-2d)
                          (mode :int)
                          (uv :vec2))
-  (if (= mode 0)
-      (- (.a (texture sampler uv)) 0.5)
-      (- (median (.xyz (texture sampler uv))) 0.5)))
+  (case mode
+    ;; 1 = msdf
+    (1 (- (median (.xyz (texture sampler uv))) 0.5))
+    ;; 0 = sdf/psdf
+    (0 (- (.a (texture sampler uv)) 0.5))
+    ;; 2 = inverted msdf
+    (otherwise (- (- 1 (median (.xyz (texture sampler uv)))) 0.5))))
 
 (define-function text/frag ((uv :vec2)
                             &uniform
@@ -47,15 +51,18 @@
          (d s)
          (c (clamp (+ (* d (dot unit (/ 0.5 (fwidth uv))))
                       0.5)
-                   0 1)))
-    (when (= (mode font) 2)
-      (setf c (- 1 c)))
-    #++ (vec4 s
-              1)
+                   0 1))
+         (co (clamp (+ (* (+ d 0.3) (dot unit (/ 0.5 (fwidth uv))))
+                       0.5)
+                    0 1)))
+
+    (if (< co 0.01)
+        (discard)
+        (vec4 (mix (vec3 0 0 0) (vec3 1 1 1) c) co))
+    #++
     (if (< c 0.01)
         (discard)
-        (vec4 1 1 1 c))
-    ))
+        (vec4 1 1 1 c))))
 
 (define-shader text ()
   (:vertex (text/vert text-attrs))
