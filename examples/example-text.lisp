@@ -214,6 +214,15 @@ text bmfont V."
          :text "yahei 世界 r."
          :fontspec '(:fonts "yahei-msdf.json"))
    (c/render:render :material 'text-yahei
+                    :mode :dynamic-mesh))
+  (("yahei2")
+   (c/xform:transform :translate (v3:vec -50 120 1)
+                      :scale (v3:vec 1.6 1.6 0.3))
+   (c/dmesh:dynamic-mesh :geometry 'text)
+   (text :target-geometry (v:ref :self :component 'c/dmesh:dynamic-mesh)
+         :text "界"
+         :fontspec '(:fonts "yahei-msdf.json"))
+   (c/render:render :material 'text-yahei
                     :mode :dynamic-mesh)))
 
 ;;; Prefab descriptors
@@ -229,11 +238,5 @@ text bmfont V."
 #++
 (untrace)
 #++
-virality.engine::*core-debug*
+(virality.engine::stop virality.engine::*core-debug*)
 
-
-;;(float 17104/681)25.116005
-;;hash-table
-
-#++
-(uiop:xdg-config-home)
